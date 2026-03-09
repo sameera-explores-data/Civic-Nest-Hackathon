@@ -448,7 +448,7 @@ const inferAreaFromMessage = (message = '') => {
 export const sendChatMessage = async (message) => {
   try {
     const inferredArea = inferAreaFromMessage(message);
-    const data = await apiRequest('/query', {
+    const data = await apiRequest('/api/chat', {
       method: 'POST',
       role: ROLE.RESIDENT,
       body: {
