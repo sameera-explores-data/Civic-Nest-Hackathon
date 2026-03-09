@@ -36,7 +36,9 @@ class StatusCheck(BaseModel):
 
 class StatusCheckCreate(BaseModel):
     client_name: str
-
+class ChatRequest(BaseModel):
+    message: str
+    
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
@@ -65,6 +67,36 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+@api_router.post("/chat")
+async def civic_chat(req: ChatRequest):
+
+    text = req.message.lower()
+
+    if "dump" in text:
+        category = "Illegal Dumping"
+    elif "water" in text:
+        category = "Standing Water"
+    elif "pothole" in text:
+        category = "Road Damage"
+    elif "graffiti" in text:
+        category = "Graffiti"
+    else:
+        category = "General Issue"
+
+    incident = {
+        "id": str(uuid.uuid4()),
+        "description": req.message,
+        "category": category,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+    await db.incidents.insert_one(incident)
+
+    return {
+        "message": f"I've logged this issue as '{category}'. A city team will review it shortly.",
+        "incident_id": incident["id"]
+    }
 
 # Include the router in the main app
 app.include_router(api_router)
