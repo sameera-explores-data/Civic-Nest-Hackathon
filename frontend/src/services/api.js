@@ -452,9 +452,7 @@ export const sendChatMessage = async (message) => {
       method: 'POST',
       role: ROLE.RESIDENT,
       body: {
-        text: message,
-        area: inferredArea || undefined,
-        time_context: 'recent'
+        message: message
       }
     });
 
